@@ -8,7 +8,6 @@ import glob
 import os
 from bs4 import BeautifulSoup
 
-
 def joinanddelete(localfile,namevideo):
     try:
         cp = subprocess.run(
@@ -23,7 +22,6 @@ def joinanddelete(localfile,namevideo):
         print(cpe.stderr, end="")
         sys.exit(cpe.returncode)
 
-    # Delete all .log files
     log_files = glob.glob('{}.*'.format(localfile))
     print(f"Found files: {log_files}")
 
@@ -68,8 +66,7 @@ namevideourl=soup.find("meta",attrs={"property":"og:video"})
 
 namevideo = ((namevideourl["content"]).split('/'))[-1]
 
-regex = "^(.+).thumbs"
-result = re.findall(regex,item["src"])
+result = re.findall("^(.+).thumbs",item["src"])
 urltodowload = "https:{}.mp4".format(result[0])
 increment = 60
 start = 0
