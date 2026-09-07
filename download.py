@@ -9,11 +9,6 @@ import os
 from bs4 import BeautifulSoup
 
 
-#file 'clip1.mp4'
-#file 'clip2.mp4'
-#file 'clip3.mp4'
-
-
 def joinanddelete(localfile,namevideo):
     try:
         cp = subprocess.run(
