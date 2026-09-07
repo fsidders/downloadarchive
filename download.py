@@ -34,13 +34,11 @@ def joinanddelete(localfile, namevideo):
         print(cpe.stderr, end="")
         sys.exit(cpe.returncode)
 
-    log_files = glob.glob("{}.*".format(localfile))
-    print(f"Found files: {log_files}")
+    del_files = glob.glob("{}.*".format(localfile))
 
-    for file_name in log_files:
+    for file_name in del_files:
         try:
             os.remove(file_name)
-            print(f"Deleted: {file_name}")
         except OSError as e:
             print(f"Error deleting {file_name}: {e}")
 
@@ -57,7 +55,6 @@ def download_file(url, local_filename):
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
         except requests.exceptions.HTTPError as e:
-            print("HTTP error occurred:", e)
             return False
         except requests.exceptions.RequestException as e:
             print("A request error occurred:", e)
@@ -84,27 +81,30 @@ item = soup.find("img", attrs={"data-idx": True})
 namevideourl = soup.find("meta", attrs={"property": "og:video"})
 
 namevideo = ((namevideourl["content"]).split("/"))[-1]
+fileextension = namevideo.split(".")[-1]
 
 result = re.findall("^(.+).thumbs", item["src"])
-urltodowload = "https:{}.mp4".format(result[0])
+urltodowload = "https:{}.{}".format(result[0], fileextension)
 increment = 60
 start = 0
 end = start + increment
 localfile = current_milli_time()
-fileextension = 0
+fileversion = 0
 filelist = open("{}.txt".format(localfile), "a")
 while True:
     downurl = "{}?start={}&end={}".format(urltodowload, start, end)
-    ok = download_file(downurl, "{}.{}.mp4".format(localfile, fileextension))
+    ok = download_file(
+        downurl, "{}.{}.{}".format(localfile, fileversion, fileextension)
+    )
 
     if not ok:
         break
 
-    filelist.write("file '{}.{}.mp4'\n".format(localfile, fileextension))
+    filelist.write("file '{}.{}.{}'\n".format(localfile, fileversion, fileextension))
 
     start += increment
     end += increment
-    fileextension += 1
+    fileversion += 1
     time.sleep(3)
 
 filelist.close()
