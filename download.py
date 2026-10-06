@@ -94,7 +94,7 @@ filelist = open("{}.txt".format(localfile), "a")
 while True:
     downurl = "{}?start={}&end={}".format(urltodowload, start, end)
 
-    print ("Downloading part {}".format(fileversion))
+    print("Downloading part {}".format(fileversion))
 
     ok = download_file(
         downurl, "{}.{}.{}".format(localfile, fileversion, fileextension)
@@ -112,5 +112,4 @@ while True:
 
 filelist.close()
 joinanddelete(localfile, namevideo)
-print ("Finished.")
-
+print("Finished.")
