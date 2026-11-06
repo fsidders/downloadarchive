@@ -1,15 +1,16 @@
 import argparse
-import requests
 import re
 import time
 import subprocess
 import sys
 import glob
 import os
+import requests
+
 from bs4 import BeautifulSoup
 
 
-def joinanddelete(localfile, namevideo):
+def joinanddelete(lfile, namev):
     try:
         cp = subprocess.run(
             [
@@ -19,10 +20,10 @@ def joinanddelete(localfile, namevideo):
                 "-safe",
                 "0",
                 "-i",
-                "{}.txt".format(localfile),
+                "{}.txt".format(lfile),
                 "-c",
                 "copy",
-                namevideo,
+                namev,
             ],
             capture_output=True,
             check=True,
@@ -34,7 +35,7 @@ def joinanddelete(localfile, namevideo):
         print(cpe.stderr, end="")
         sys.exit(cpe.returncode)
 
-    del_files = glob.glob("{}.*".format(localfile))
+    del_files = glob.glob("{}.*".format(lfile))
 
     for file_name in del_files:
         try:
@@ -48,7 +49,7 @@ def current_milli_time():
 
 
 def download_file(url, local_filename):
-    with requests.get(url, stream=True) as r:
+    with requests.get(url, stream=True, timeout=10) as r:
         try:
             r.raise_for_status()
             with open(local_filename, "wb") as f:
@@ -72,7 +73,7 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
 }
 
-page = requests.get(args.url, headers=headers)
+page = requests.get(args.url, headers=headers, timeout=10)
 
 soup = BeautifulSoup(page.content, "html.parser")
 
@@ -85,9 +86,9 @@ fileextension = namevideo.split(".")[-1]
 
 result = re.findall("^(.+).thumbs", item["src"])
 urltodowload = "https:{}.{}".format(result[0], fileextension)
-increment = 60
+INCREMENT = 60
 start = 0
-end = start + increment
+end = start + INCREMENT
 localfile = current_milli_time()
 fileversion = 0
 filelist = open("{}.txt".format(localfile), "a")
@@ -105,8 +106,8 @@ while True:
 
     filelist.write("file '{}.{}.{}'\n".format(localfile, fileversion, fileextension))
 
-    start += increment
-    end += increment
+    start += INCREMENT
+    end += INCREMENT
     fileversion += 1
     time.sleep(3)
 
