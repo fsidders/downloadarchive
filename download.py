@@ -85,26 +85,26 @@ namevideo = ((namevideourl["content"]).split("/"))[-1]
 fileextension = namevideo.split(".")[-1]
 
 result = re.findall("^(.+).thumbs", item["src"])
-urltodowload = "https:{}.{}".format(result[0], fileextension)
+urltodowload = f"https:{result[0]}.{fileextension}"
 INCREMENT = 60
 start = 0
 end = start + INCREMENT
 localfile = current_milli_time()
 fileversion = 0
-filelist = open("{}.txt".format(localfile), "a")
+filelist = open(f"{localfile}.txt", "a")
 while True:
-    downurl = "{}?start={}&end={}".format(urltodowload, start, end)
+    downurl = f"{urltodowload}?start={start}&end={end}"
 
-    print("Downloading part {}".format(fileversion))
+    print(f"Downloading part {fileversion}")
 
     ok = download_file(
-        downurl, "{}.{}.{}".format(localfile, fileversion, fileextension)
+        downurl, f"{localfile}.{fileversion}.{fileextension}"
     )
 
     if not ok:
         break
 
-    filelist.write("file '{}.{}.{}'\n".format(localfile, fileversion, fileextension))
+    filelist.write(f"file '{localfile}.{fileversion}.{fileextension}'\n")
 
     start += INCREMENT
     end += INCREMENT
